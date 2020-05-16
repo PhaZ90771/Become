@@ -10,10 +10,15 @@ public class PlayerInputManager : MonoBehaviour
     public CONTROL_MODE CurrentControlMode = CONTROL_MODE.KEYBOARDMOUSE;
 
     private Controls controls;
+
+    private PlayerCharacterController player;
     
     private void Awake()
     {
+        player = GetComponent<PlayerCharacterController>();
+
         controls = new Controls();
+        controls.Player.PrimaryFire.performed += PrimaryFire_performed;
 
         InputSystem.onActionChange += InputSystem_onActionChange;
 
@@ -92,6 +97,12 @@ public class PlayerInputManager : MonoBehaviour
         move = Vector3.ClampMagnitude(move, 1);
         return move;
     }
+
+    private void PrimaryFire_performed(InputAction.CallbackContext obj)
+    {
+        player.PrimaryAction();
+    }
+
 
     public enum CONTROL_MODE
     {

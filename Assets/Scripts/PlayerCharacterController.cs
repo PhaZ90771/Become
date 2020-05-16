@@ -10,6 +10,7 @@ public class PlayerCharacterController : MonoBehaviour
     private Transform host;
 
     private bool isGrounded = true;
+    private Transform target;
 
     [SerializeField]
     private Vector3 Velocity;
@@ -26,17 +27,15 @@ public class PlayerCharacterController : MonoBehaviour
 
     private void Awake()
     {
-        host = transform.parent;
+        SetHost(transform.parent);
 
-        hostCharacterController = host.GetComponent<CharacterController>();
         playerInputManager = GetComponent<PlayerInputManager>();
-
-        hostCharacterController.enableOverlapRecovery = true;
     }
 
     private void Update()
     {
         GroundCheck();
+        TargetCheck();
 
         var rotation = Vector3.zero;
         rotation.y = playerInputManager.GetCameraRotation();
@@ -73,6 +72,65 @@ public class PlayerCharacterController : MonoBehaviour
         //}
 
         //Debug.DrawRay(start, Vector3.down, Color.green);
+    }
+
+    private void TargetCheck()
+    {
+        RaycastHit hit;
+        Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
+        bool hasHit = Physics.Raycast(ray, out hit, Mathf.Infinity);
+        if (hasHit)
+        {
+            target = hit.transform;
+        }
+        else
+        {
+            target = null;
+        }
+    }
+
+    private bool SetHost(Transform newHost)
+    {
+        if (newHost.tag.Equals("Creature"))
+        {
+            if (host != null)
+            {
+                host.tag = "Creature";
+                host.gameObject.layer = 0;
+            }
+
+            newHost.tag = "Player";
+            newHost.gameObject.layer = 8;
+
+            host = newHost;
+
+            hostCharacterController = newHost.GetComponent<CharacterController>();
+
+            transform.SetParent(host, worldPositionStays: false);
+
+            return true;
+        }
+        return false;
+    }
+
+    internal void PrimaryAction()
+    {
+        if (target != null)
+        {
+            SetHost(target);
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (target != null)
+        {
+            Debug.DrawLine(Camera.main.transform.position, target.position, Color.green);
+        }
+        else
+        {
+            Debug.DrawRay(Camera.main.transform.position, Camera.main.transform.forward);
+        }
     }
 
     [Serializable]
