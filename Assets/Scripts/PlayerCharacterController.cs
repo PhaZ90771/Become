@@ -27,9 +27,8 @@ public class PlayerCharacterController : MonoBehaviour
 
     private void Awake()
     {
-        SetHost(transform.parent);
-
         playerInputManager = GetComponent<PlayerInputManager>();
+        SetHost(transform.parent);
     }
 
     private void Update()
@@ -54,6 +53,7 @@ public class PlayerCharacterController : MonoBehaviour
         {
             Velocity += Vector3.down * characterConstants.GravityDownForce * Time.deltaTime;
         }
+
         hostCharacterController.Move(Velocity * Time.deltaTime);
     }
 
@@ -107,6 +107,8 @@ public class PlayerCharacterController : MonoBehaviour
             hostCharacterController = newHost.GetComponent<CharacterController>();
 
             transform.SetParent(host, worldPositionStays: false);
+
+            playerInputManager.playerCamera.m_XAxis.Value = host.rotation.eulerAngles.y;
 
             return true;
         }

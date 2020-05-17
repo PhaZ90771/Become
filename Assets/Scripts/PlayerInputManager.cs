@@ -40,27 +40,6 @@ public class PlayerInputManager : MonoBehaviour
         SetCursorState(true);
     }
 
-    private void Update()
-    {
-        CinemachineCore.GetInputAxis = GetAxisName;
-    }
-
-    private float GetAxisName(string axisName)
-    {
-        var delta = controls.Player.Look.ReadValue<Vector2>();
-        delta.Normalize();
-
-        if (axisName.Equals("Mouse X"))
-        {
-            return delta.x;
-        }
-        else if (axisName.Equals("Mouse Y"))
-        {
-            return delta.y;
-        }
-        return 0;
-    }
-
     private void InputSystem_onActionChange(object obj, InputActionChange change)
     {
         if (change == InputActionChange.ActionStarted)
