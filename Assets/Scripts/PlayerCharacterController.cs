@@ -59,19 +59,19 @@ public class PlayerCharacterController : MonoBehaviour
 
     private void GroundCheck()
     {
-        isGrounded = false;
+        //isGrounded = false;
 
-        var start = host.position + Vector3.down * hostCharacterController.height / 2f;
-        Ray ray = new Ray(start, Vector3.down);
+        //var start = host.position + Vector3.down * hostCharacterController.height / 2f;
+        //Ray ray = new Ray(start, Vector3.down);
 
-        if (Physics.Raycast(ray, out RaycastHit hit))
-        {
-            isGrounded = hit.distance < characterConstants.GroundCheckDistance;
-            Debug.DrawRay(start, Vector3.down, Color.green);
-            return;
-        }
+        //if (Physics.Raycast(ray, out RaycastHit hit))
+        //{
+        //    isGrounded = hit.distance < characterConstants.GroundCheckDistance;
+        //    Debug.DrawRay(start, Vector3.down, Color.green);
+        //    return;
+        //}
 
-        Debug.DrawRay(start, Vector3.down, Color.green);
+        //Debug.DrawRay(start, Vector3.down, Color.green);
     }
 
     private void TargetCheck()
@@ -93,28 +93,18 @@ public class PlayerCharacterController : MonoBehaviour
     {
         if (newHost.tag.Equals("Creature"))
         {
-            var oldHost = host;
-            host = newHost;
-
-            if (oldHost != null)
+            if (host != null)
             {
-                oldHost.tag = "Creature";
-                oldHost.gameObject.layer = 0;
-
-                Destroy(oldHost.GetComponent<CharacterController>());
-
-                var collider = oldHost.gameObject.AddComponent<MeshCollider>();
-                collider.convex = true;
-                oldHost.gameObject.AddComponent<Rigidbody>();
+                host.tag = "Creature";
+                host.gameObject.layer = 0;
             }
 
-            host.tag = "Player";
-            host.gameObject.layer = 8;
+            newHost.tag = "Player";
+            newHost.gameObject.layer = 8;
 
-            Destroy(host.GetComponent<MeshCollider>());
-            Destroy(host.GetComponent<Rigidbody>());
+            host = newHost;
 
-            hostCharacterController = host.gameObject.AddComponent<CharacterController>();
+            hostCharacterController = newHost.GetComponent<CharacterController>();
 
             transform.SetParent(host, worldPositionStays: false);
 
