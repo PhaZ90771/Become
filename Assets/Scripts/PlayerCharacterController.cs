@@ -4,13 +4,15 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerInputManager))]
 public class PlayerCharacterController : MonoBehaviour
 {
-    private CharacterController hostCharacterController;
     private PlayerInputManager playerInputManager;
 
     private Transform host;
+    private Rigidbody hostRigidbody;
 
     private bool isGrounded = true;
     private Transform target;
+    private Vector3 relativeBottom;
+    private Vector3 bottom;
 
     [SerializeField]
     private Vector3 Velocity;
@@ -18,7 +20,6 @@ public class PlayerCharacterController : MonoBehaviour
     [SerializeField]
     private CharacterControlConstants characterConstants = new CharacterControlConstants
     {
-        GravityDownForce = 20f,
         GroundAccelerationTime = 3f,
         GroundDecelerationTime = 0.25f,
         GroundCheckDistance = 0.1f,
@@ -40,38 +41,34 @@ public class PlayerCharacterController : MonoBehaviour
         rotation.y = playerInputManager.GetCameraRotation();
         host.rotation = Quaternion.Euler(rotation);
 
-        var targetVelocity = host.TransformDirection(playerInputManager.GetMovementInput());
+        var direction = host.TransformDirection(playerInputManager.GetMovementInput());
 
         if (isGrounded)
         {
-            targetVelocity *= characterConstants.GroundSpeedMax;
-
-            var t = targetVelocity.magnitude > 0 ? Time.deltaTime / characterConstants.GroundAccelerationTime : Time.deltaTime / characterConstants.GroundDecelerationTime;
+            var targetVelocity = direction * characterConstants.GroundSpeedMax;
+            var t = Time.deltaTime;
+            t /= direction.magnitude > 0 ? characterConstants.GroundAccelerationTime : characterConstants.GroundDecelerationTime;
             Velocity = Vector3.Lerp(Velocity, targetVelocity, t);
         }
-        else
-        {
-            Velocity += Vector3.down * characterConstants.GravityDownForce * Time.deltaTime;
-        }
 
-        hostCharacterController.Move(Velocity * Time.deltaTime);
+        hostRigidbody.velocity = Velocity;
     }
 
     private void GroundCheck()
     {
         isGrounded = false;
+        bottom = host.position + relativeBottom;
 
-        var start = host.position + Vector3.down * hostCharacterController.height / 2f;
-        Ray ray = new Ray(start, Vector3.down);
+        Ray ray = new Ray(bottom, Vector3.down);
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
             isGrounded = hit.distance < characterConstants.GroundCheckDistance;
-            Debug.DrawRay(start, Vector3.down, Color.green);
+            Debug.DrawRay(bottom, Vector3.down, Color.green);
             return;
         }
 
-        Debug.DrawRay(start, Vector3.down, Color.green);
+        Debug.DrawRay(bottom, Vector3.down, Color.green);
     }
 
     private void TargetCheck()
@@ -89,6 +86,19 @@ public class PlayerCharacterController : MonoBehaviour
         }
     }
 
+    private Vector3 getRelativeBottomPoint()
+    {
+        var filter = host.GetComponent<MeshFilter>();
+
+        if (filter == null || filter.mesh == null)
+            return Vector3.zero;
+
+        var centerY = filter.mesh.bounds.center.y;
+        var relativeY = centerY - filter.mesh.bounds.extents.y;
+
+        return new Vector3(0, relativeY, 0);
+    }
+
     private bool SetHost(Transform newHost)
     {
         if (newHost.tag.Equals("Creature"))
@@ -100,25 +110,18 @@ public class PlayerCharacterController : MonoBehaviour
             {
                 oldHost.tag = "Creature";
                 oldHost.gameObject.layer = 0;
-
-                Destroy(oldHost.GetComponent<CharacterController>());
-
-                var collider = oldHost.gameObject.AddComponent<MeshCollider>();
-                collider.convex = true;
-                oldHost.gameObject.AddComponent<Rigidbody>();
             }
 
             host.tag = "Player";
             host.gameObject.layer = 8;
 
-            Destroy(host.GetComponent<MeshCollider>());
-            Destroy(host.GetComponent<Rigidbody>());
-
-            hostCharacterController = host.gameObject.AddComponent<CharacterController>();
+            hostRigidbody = host.GetComponent<Rigidbody>();
+            relativeBottom = getRelativeBottomPoint();
 
             transform.SetParent(host, worldPositionStays: false);
 
             playerInputManager.playerCamera.m_XAxis.Value = host.rotation.eulerAngles.y;
+            Velocity = hostRigidbody.velocity;
 
             return true;
         }
@@ -148,7 +151,6 @@ public class PlayerCharacterController : MonoBehaviour
     [Serializable]
     struct CharacterControlConstants
     {
-        public float GravityDownForce;
         public float GroundAccelerationTime;
         public float GroundDecelerationTime;
         public float GroundCheckDistance;

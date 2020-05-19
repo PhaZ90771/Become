@@ -73,8 +73,7 @@ public class PlayerInputManager : MonoBehaviour
     {
         Vector2 raw = controls.Player.Move.ReadValue<Vector2>();
         Vector3 move = new Vector3(raw.x, 0, raw.y);
-        move = Vector3.ClampMagnitude(move, 1);
-        return move;
+        return move.normalized;
     }
 
     private void PrimaryFire_performed(InputAction.CallbackContext obj)
