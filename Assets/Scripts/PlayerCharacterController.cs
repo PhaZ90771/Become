@@ -14,6 +14,8 @@ public class PlayerCharacterController : MonoBehaviour
     private Vector3 relativeBottom;
     private Vector3 bottom;
 
+    private Vector3 groundCheckMargin = new Vector3(0f, 0.01f, 0f);
+
     [SerializeField]
     private Vector3 Velocity;
 
@@ -59,7 +61,7 @@ public class PlayerCharacterController : MonoBehaviour
         isGrounded = false;
         bottom = host.position + relativeBottom;
 
-        Ray ray = new Ray(bottom, Vector3.down);
+        Ray ray = new Ray(bottom + groundCheckMargin, Vector3.down);
 
         if (Physics.Raycast(ray, out RaycastHit hit))
         {
@@ -68,7 +70,7 @@ public class PlayerCharacterController : MonoBehaviour
             return;
         }
 
-        Debug.DrawRay(bottom, Vector3.down, Color.green);
+        Debug.DrawRay(bottom, Vector3.down, Color.red);
     }
 
     private void TargetCheck()
@@ -86,7 +88,7 @@ public class PlayerCharacterController : MonoBehaviour
         }
     }
 
-    private Vector3 getRelativeBottomPoint()
+    private Vector3 GetRelativeBottomPoint()
     {
         var filter = host.GetComponent<MeshFilter>();
 
@@ -116,7 +118,7 @@ public class PlayerCharacterController : MonoBehaviour
             host.gameObject.layer = 8;
 
             hostRigidbody = host.GetComponent<Rigidbody>();
-            relativeBottom = getRelativeBottomPoint();
+            relativeBottom = GetRelativeBottomPoint();
 
             transform.SetParent(host, worldPositionStays: false);
 
