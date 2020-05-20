@@ -4,6 +4,8 @@ using UnityEngine;
 [RequireComponent(typeof(PlayerInputManager))]
 public class PlayerCharacterController : MonoBehaviour
 {
+    static int layerMask = ~(1 << 9);
+
     private PlayerInputManager playerInputManager;
 
     private Transform host;
@@ -77,7 +79,7 @@ public class PlayerCharacterController : MonoBehaviour
     {
         RaycastHit hit;
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-        bool hasHit = Physics.Raycast(ray, out hit, Mathf.Infinity);
+        bool hasHit = Physics.Raycast(ray, out hit, Mathf.Infinity, layerMask);
         if (hasHit)
         {
             target = hit.transform;
@@ -103,7 +105,7 @@ public class PlayerCharacterController : MonoBehaviour
 
     private bool SetHost(Transform newHost)
     {
-        if (newHost.tag.Equals("Creature"))
+        if (newHost.CompareTag("Creature"))
         {
             var oldHost = host;
             host = newHost;
