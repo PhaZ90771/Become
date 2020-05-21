@@ -1,13 +1,13 @@
-﻿using System;
+﻿using Boo.Lang;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CreatureController : MonoBehaviour
 {
-    private bool isGrounded = true;
-
-    private Vector3 relativeBottom;
-    private Vector3 bottom;
-    private Vector3 groundCheckMargin = new Vector3(0f, 0.01f, 0f);
+    [SerializeField]
+    private HashSet<int> isGroundedOn = new HashSet<int>();
 
     private Vector3 direction;
     private bool jumpAttempt = false;
@@ -28,15 +28,12 @@ public class CreatureController : MonoBehaviour
     private void Awake()
     {
         creatureRigidBody = GetComponent<Rigidbody>();
-        relativeBottom = GetRelativeBottomPoint();
     }
 
     private void Update()
     {
-        GroundCheck();
-
         var movement = new Vector3();
-        if (isGrounded)
+        if (isGroundedOn.Any())
         {
             jumpsLeft = characterConstants.JumpsInAir;
 
@@ -51,7 +48,7 @@ public class CreatureController : MonoBehaviour
 
         if (jumpAttempt && CanJump())
         {
-            if (!isGrounded && jumpsLeft > 0 && characterConstants.JumpsInAir > 0)
+            if (!isGroundedOn.Any() && jumpsLeft > 0 && characterConstants.JumpsInAir > 0)
             {
                 jumpsLeft -= 1;
             }
@@ -65,34 +62,37 @@ public class CreatureController : MonoBehaviour
         LimitGroundSpeed();
     }
 
-    private Vector3 GetRelativeBottomPoint()
+    private void OnCollisionEnter(Collision collision)
     {
-        var filter = GetComponent<MeshFilter>();
-
-        if (filter == null || filter.mesh == null)
-            return Vector3.zero;
-
-        var centerY = filter.mesh.bounds.center.y;
-        var relativeY = centerY - filter.mesh.bounds.extents.y;
-
-        return new Vector3(0, relativeY, 0);
+        var id = collision.gameObject.GetInstanceID();
+        foreach (ContactPoint cp in collision.contacts)
+        {
+            if (cp.normal.y > 0.5)
+            {
+                isGroundedOn.Add(id);
+                return;
+            }
+        }
     }
 
-    private void GroundCheck()
+    private void OnCollisionStay(Collision collision)
     {
-        isGrounded = false;
-        bottom = transform.position + relativeBottom;
-
-        Ray ray = new Ray(bottom + groundCheckMargin, Vector3.down);
-
-        if (Physics.Raycast(ray, out RaycastHit hit))
+        var id = collision.gameObject.GetInstanceID();
+        foreach (ContactPoint cp in collision.contacts)
         {
-            isGrounded = hit.distance < characterConstants.GroundCheckDistance;
-            Debug.DrawRay(bottom, Vector3.down, Color.green);
-            return;
+            if (cp.normal.y > 0.5)
+            {
+                isGroundedOn.Add(id);
+                return;
+            }
         }
+        isGroundedOn.Remove(collision.gameObject.GetInstanceID());
+    }
 
-        Debug.DrawRay(bottom, Vector3.down, Color.red);
+    private void OnCollisionExit(Collision collision)
+    {
+        var id = collision.gameObject.GetInstanceID();
+        isGroundedOn.Remove(id);
     }
 
     private Vector3 GetGroundSpeed()
@@ -116,7 +116,7 @@ public class CreatureController : MonoBehaviour
         {
             return false;
         }
-        if (isGrounded)
+        if (isGroundedOn.Any())
         {
             return true;
         }

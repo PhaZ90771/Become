@@ -1317,7 +1317,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 35758039}
-  m_LocalRotation: {x: 0.025738016, y: 0.04780402, z: -0.0012323317, w: 0.99852437}
+  m_LocalRotation: {x: 0.025738016, y: 0.047804017, z: -0.0012323317, w: 0.99852437}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 0.6666667, z: 1}
   m_Children:
@@ -2243,6 +2243,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 517b7efec6b843543898173aee1ca32a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isGrounded: 1
   characterConstants:
     GroundCheckDistance: 0.1
     GroundSpeedMax: 15
@@ -2602,7 +2603,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 815013031}
-  m_LocalRotation: {x: 0.025738034, y: 0.047804017, z: -0.0012320842, w: 0.9985243}
+  m_LocalRotation: {x: 0.025738027, y: 0.047804013, z: -0.0012320839, w: 0.9985243}
   m_LocalPosition: {x: -1.5, y: 0.77, z: -7.21}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
@@ -22575,7 +22576,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1814705265}
-  m_LocalRotation: {x: 0.025738027, y: 0.047804013, z: -0.0012321268, w: 0.99852437}
+  m_LocalRotation: {x: 0.025738029, y: 0.047804013, z: -0.0012321263, w: 0.9985243}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 0.6666667, z: 1}
   m_Children:
@@ -22775,7 +22776,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2023890588}
-  m_LocalRotation: {x: 0.02573803, y: 0.047804017, z: -0.001232084, w: 0.9985243}
+  m_LocalRotation: {x: 0.025738029, y: 0.047804013, z: -0.001232084, w: 0.99852437}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 0.6666667, z: 1}
   m_Children:
@@ -22950,6 +22951,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 517b7efec6b843543898173aee1ca32a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isGrounded: 1
   characterConstants:
     GroundCheckDistance: 0.1
     GroundSpeedMax: 15
