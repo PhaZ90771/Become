@@ -60,6 +60,11 @@ public class PlayerCharacterController : MonoBehaviour
         return false;
     }
 
+    internal void Jump()
+    {
+        host.StartJump();
+    }
+
     internal void PrimaryAction()
     {
         if (target != null)

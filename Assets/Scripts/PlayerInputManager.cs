@@ -18,6 +18,7 @@ public class PlayerInputManager : MonoBehaviour
         player = GetComponent<PlayerCharacterController>();
 
         controls = new Controls();
+        controls.Player.Jump.performed += Jump_performed;
         controls.Player.PrimaryFire.performed += PrimaryFire_performed;
 
         InputSystem.onActionChange += InputSystem_onActionChange;
@@ -58,6 +59,17 @@ public class PlayerInputManager : MonoBehaviour
             }
         }
     }
+
+    private void Jump_performed(InputAction.CallbackContext obj)
+    {
+        player.Jump();
+    }
+
+    private void PrimaryFire_performed(InputAction.CallbackContext obj)
+    {
+        player.PrimaryAction();
+    }
+
     private void SetCursorState(bool state)
     {
         Cursor.lockState = state ? CursorLockMode.None : CursorLockMode.Locked;
@@ -75,12 +87,6 @@ public class PlayerInputManager : MonoBehaviour
         Vector3 move = new Vector3(raw.x, 0, raw.y);
         return move.normalized;
     }
-
-    private void PrimaryFire_performed(InputAction.CallbackContext obj)
-    {
-        player.PrimaryAction();
-    }
-
 
     public enum CONTROL_MODE
     {
